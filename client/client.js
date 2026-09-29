@@ -1879,6 +1879,53 @@ class BoardCanvas extends Board {
         }
         return null;
     }
+    commit(round) {
+        super.commit(round);
+        this._pendingCells.forEach(cell => cell.node.remove());
+        this._pendingCells = [];
+        this._redrawCommittedCells();
+    }
+    cycleTransform(x, y) {
+        const tile = this._cells.at(x, y).tile;
+        if (!tile) {
+            return;
+        }
+        const previousTransform = tile.transform;
+        super.cycleTransform(x, y);
+        if (tile.transform != previousTransform && !this._isPending(x, y)) {
+            this._redrawCommittedCells();
+        }
+    }
+    _isPending(x, y) {
+        return this._pendingCells.some(cell => cell.x == x && cell.y == y);
+    }
+    _redrawCommittedCells() {
+        const ctx = this._ctx;
+        this._drawGrid();
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this._cells.forEach(cell => {
+            if (!cell.tile || this._isPending(cell.x, cell.y)) {
+                return;
+            }
+            ctx.drawImage(cell.tile.createCanvas(), cellToPx(cell.x) * DPR$1, cellToPx(cell.y) * DPR$1);
+        });
+        ctx.restore();
+        ctx.font = bodyStyle.getPropertyValue("--round-font");
+        const size = Number(bodyStyle.getPropertyValue("--round-size"));
+        const bg = bodyStyle.getPropertyValue("--round-bg");
+        this._cells.forEach(cell => {
+            if (!cell.tile || !cell.round || this._isPending(cell.x, cell.y)) {
+                return;
+            }
+            const pxx = cellToPx(cell.x) + TILE;
+            const pxy = cellToPx(cell.y);
+            ctx.fillStyle = bg;
+            ctx.fillRect(pxx - size, pxy, size, size);
+            ctx.fillStyle = "#000";
+            ctx.fillText(cell.round.toString(), pxx - size / 2, pxy + size / 2);
+        });
+    }
 }
 
 let current = null;
@@ -2265,6 +2312,13 @@ class Round {
             }
         }
         return true;
+    }
+    _tryToCycle(cell) {
+        if (!cell.tile || cell.round == 0) {
+            return;
+        }
+        this._board.cycleTransform(cell.x, cell.y);
+        this._syncEnd();
     }
 }
 
