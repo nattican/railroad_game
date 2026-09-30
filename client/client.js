@@ -1664,10 +1664,9 @@ class BoardCanvas extends Board {
                     pxy = e.clientY;
                 }
                 const rect = this.node.getBoundingClientRect();
-                pxx -= rect.left;
+                pxx = (pxx - rect.left) * this.node.offsetWidth / rect.width;
                 pxy -= rect.top;
-                let x = pxToCell(pxx);
-                let y = pxToCell(pxy);
+                let x = pxToCell(p    let y = pxToCell(pxy);
                 if (x === null || y === null) {
                     return;
                 }
