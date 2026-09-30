@@ -1797,6 +1797,7 @@ class BoardCanvas extends Board {
         ctx.fillRect(start, start, length, length);
         // grid
         ctx.beginPath();
+        ctx.strokeStyle = "#000";
         let offsetOdd = 0, offsetEven = 0, lineWidth = THIN;
         switch (DPR$1) {
             case 1:
