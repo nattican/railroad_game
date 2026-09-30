@@ -1,73 +1,78 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="theme-color" content="#def" />
-
-		<link rel="manifest" href="manifest.webmanifest" />
-		<link rel="stylesheet" href="client/client.css" />
-		<link rel="icon" href="img/icon.svg" />
-		<link rel="apple-touch-icon" href="img/icon-192.png" />
-
-		<title>Rhttps://github.com/matskevich/tg-mcp-guarded
-	<body>
-		<h1>Railroad Ink</h1>
-		<main>
-			<section id="intro">
-				<p>Tap to place or rotate any tile. Double-tap a tile placed this round to remove it.</p>
-				<ul>
-					<li><button name="start-normal"><strong>Play normal game</strong></button></li>
-					<li><button name="start-lake">Play with lakes</button></li>
-					<li><button name="start-river">Play with rivers</button></li>
-					<li><button name="start-forest">Play with forests</button></li>
-					<li><button name="start-multi">Multiplayer</button></li>
-				</ul>
-			</section>
-
-			<section id="game"></section>
-
-			<section id="outro">
-				<h2>Game over</h2>
-				<ul>
-					<li><button name="again"><strong>Play again</strong></button></li>
-					<li><button name="download">Download an image of the game</button></li>
-				</ul>
-			</section>
-
-			<section id="score"></section>
-		</main>
-		<template>
-			<div id="multi-setup">
-				<table>
-					<tr>
-						<td>Your name: </td><td><input name="player-name" value="player" /></td>
-					</tr>
-					<tr>
-						<td>Game name: </td><td><input name="game-name" value="game" /></td>
-					</tr>
-				</table>
-				<ul>
-					<li><button name="create-normal">Create normal game</button></li>
-					<li><button name="join">Join game</button></li>
-					<li><button name="continue">Continue game</button></li>
-				</ul>
-
-				<ul>
-					<li><button name="create-lake">Create game with lakes</button></li>
-					<li><button name="create-river">Create game with rivers</button></li>
-					<li><button name="create-forest">Create game with forests</button></li>
-				</ul>
-			</div>
-			<div id="multi-lobby">
-				<h2>Players</h2>
-				<ul></ul>
-				<button name="start"></button>
-			</div>
-		</template>
-
-		<script>
-// Keep drawing coordinates stable while fitting any screen width.
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#def">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="client/client.css">
+<link rel="icon" href="img/icon.svg">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>Railroad Ink</title>
+<style>
+body { min-width: 0; }
+main { width: 100%; padding: 0 8px; }
+#intro, #outro, #game { width: 100%; max-width: 574px; min-width: 0; }
+#intro ul, #outro ul, #game #multi-setup ul { flex-wrap: wrap; gap: 8px; }
+#intro ul li, #outro ul li, #game #multi-setup ul li { flex: 1 1 120px; margin: 0; }
+#game #multi-setup { min-width: 0; max-width: 100%; }
+#game #multi-setup input { max-width: 100%; min-width: 0; }
+#game .pool { flex-wrap: wrap; gap: 8px; }
+#game .pool h2 { width: 100%; text-align: left; }
+#game .pool .dice + .dice, #game .pool button { margin-left: 0; }
+.board-frame { width: 100%; max-width: var(--board-width); overflow: hidden; }
+.board-frame > .board { width: var(--board-width); transform-origin: top left; }
+@media (max-width: 600px) {
+#game .pool .dice .tile { width: 44px; height: 44px; }
+#game .pool button { width: auto; min-width: 44px; height: 46px; }
+}
+</style>
+</head>
+<body>
+<h1>Railroad Ink</h1>
+<main>
+<section id="intro">
+<p>Tap to place or rotate any tile. Double-tap a tile placed this round to remove it.</p>
+<ul>
+<li><button name="start-normal"><strong>Play normal game</strong></button></li>
+<li><button name="start-lake">Play with lakes</button></li>
+<li><button name="start-river">Play with rivers</button></li>
+<li><button name="start-forest">Play with forests</button></li>
+<li><button name="start-multi">Multiplayer</button></li>
+</ul>
+</section>
+<section id="game"></section>
+<section id="outro">
+<h2>Game over</h2>
+<ul>
+<li><button name="again"><strong>Play again</strong></button></li>
+<li><button name="download">Download an image of the game</button></li>
+</ul>
+</section>
+<section id="score"></section>
+</main>
+<template>
+<div id="multi-setup">
+<table>
+<tr><td>Your name: </td><td><input name="player-name" value="player"></td></tr>
+<tr><td>Game name: </td><td><input name="game-name" value="game"></td></tr>
+</table>
+<ul>
+<li><button name="create-normal">Create normal game</button></li>
+<li><button name="join">Join game</button></li>
+<li><button name="continue">Continue game</button></li>
+</ul>
+<ul>
+<li><button name="create-lake">Create game with lakes</button></li>
+<li><button name="create-river">Create game with rivers</button></li>
+<li><button name="create-forest">Create game with forests</button></li>
+</ul>
+</div>
+<div id="multi-lobby">
+<h2>Players</h2><ul></ul><button name="start"></button>
+</div>
+</template>
+<script>
 const gameMain = document.querySelector("main");
 const fitFrame = frame => {
 const board = frame.querySelector(".board");
@@ -89,6 +94,6 @@ gameMain.querySelectorAll(".board-frame").forEach(fitFrame);
 new MutationObserver(fitBoards).observe(gameMain, { childList: true, subtree: true });
 </script>
 <script type="module" src="client/client.js"></script>
-		<script>navigator.serviceWorker.register("sw.js");</script>
-	</body>
+<script>navigator.serviceWorker.register("sw.js");</script>
+</body>
 </html>
