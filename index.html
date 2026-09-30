@@ -10,9 +10,7 @@
 		<link rel="icon" href="img/icon.svg" />
 		<link rel="apple-touch-icon" href="img/icon-192.png" />
 
-		<title>Railroad Ink</title>
-	</head>
-
+		<title>Rhttps://github.com/matskevich/tg-mcp-guarded
 	<body>
 		<h1>Railroad Ink</h1>
 		<main>
@@ -68,7 +66,29 @@
 			</div>
 		</template>
 
-		<script type="module" src="client/client.js"></script>
+		<script>
+// Keep drawing coordinates stable while fitting any screen width.
+const gameMain = document.querySelector("main");
+const fitFrame = frame => {
+const board = frame.querySelector(".board");
+if (!board) { return; }
+const scale = Math.min(1, frame.clientWidth / board.offsetWidth);
+board.style.transform = `scale(${scale})`;
+frame.style.height = `${board.offsetHeight * scale}px`;
+};
+const fitBoards = () => {
+gameMain.querySelectorAll(":scope > .board").forEach(board => {
+const frame = document.createElement("div");
+frame.className = "board-frame";
+board.before(frame);
+frame.append(board);
+new ResizeObserver(() => fitFrame(frame)).observe(frame);
+});
+gameMain.querySelectorAll(".board-frame").forEach(fitFrame);
+};
+new MutationObserver(fitBoards).observe(gameMain, { childList: true, subtree: true });
+</script>
+<script type="module" src="client/client.js"></script>
 		<script>navigator.serviceWorker.register("sw.js");</script>
 	</body>
 </html>
