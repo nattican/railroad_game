@@ -980,7 +980,7 @@ class Board {
         }
         let avail = this._getTransforms(tile, x, y);
         let index = avail.indexOf(tile.transform);
-        if (index == -1 || avail.length <= 1) {
+        if (!avail.length) {
             return;
         }
         index = (index + 1) % avail.length;
@@ -2876,3 +2876,4 @@ function init() {
     goIntro();
 }
 init();
+
