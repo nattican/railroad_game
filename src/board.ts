@@ -71,8 +71,10 @@ export default class Board {
 
 		let avail = this._getTransforms(tile, x, y);
 		let index = avail.indexOf(tile.transform);
-		if (index == -1 || avail.length <= 1) { return; }
+		if (!avail.length) { return; }
 
+		// A later neighbor can invalidate the current orientation. In that case,
+		// index is -1 and the next orientation is the first legal one, even if unique.
 		index = (index+1) % avail.length;
 		tile.transform = avail[index];
 	}
